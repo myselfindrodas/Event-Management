@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#B7C4FF</color>
+    <color name="on_primary">#002A78</color>
+    <color name="primary_container">#173F9F</color>
+    <color name="on_primary_container">#DEE5FF</color>
+    <color name="secondary">#C3C6DE</color>
+    <color name="on_secondary">#2D3042</color>
+    <color name="secondary_container">#44475A</color>
+    <color name="on_secondary_container">#E0E3FA</color>
+    <color name="tertiary">#E4BAD8</color>
+    <color name="tertiary_container">#5B3C56</color>
+    <color name="background">#111318</color>
+    <color name="surface">#111318</color>
+    <color name="surface_container_low">#191B20</color>
+    <color name="surface_container">#1D1F25</color>
+    <color name="surface_container_high">#282A30</color>
+    <color name="surface_bright">#37393F</color>
+    <color name="on_surface">#E3E2E9</color>
+    <color name="on_surface_variant">#C6C6D0</color>
+    <color name="outline">#90909A</color>
+    <color name="outline_variant">#45464F</color>
+    <color name="error">#FFB4AB</color>
+    <color name="success">#9DD5AD</color>
+    <color name="success_container">#155B31</color>
+    <color name="warning">#FFB95E</color>
+    <color name="warning_container">#673A00</color>
+
+    <color name="gradient_brand_start">#2C46B8</color>
+    <color name="gradient_brand_mid">#3A2C9E</color>
+    <color name="gradient_brand_end">#5B2B92</color>
+    <color name="gradient_accent_end">#2447B8</color>
+
+    <color name="on_brand">#FFFFFF</color>
+    <color name="on_brand_muted">#C3CCF5</color>
+    <color name="brand_overlay">#1FFFFFFF</color>
+    <color name="brand_overlay_strong">#33FFFFFF</color>
+
+    <color name="accent_cyan">#7FD7EC</color>
+    <color name="accent_cyan_container">#0B4C5E</color>
+    <color name="accent_violet">#D6BBFF</color>
+    <color name="accent_violet_container">#432A76</color>
+
+    <color name="shimmer_base">#23252C</color>
+</resources>

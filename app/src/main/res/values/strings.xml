@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Event Manager</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="create_account">Create Account</string>
+    <string name="already_have_account">Already have an account? Login</string>
+    <string name="no_account">Don\'t have an account? Sign Up</string>
+    <string name="events">Events</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="add_event">Add Event</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="location">Location</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="search_events">Search events…</string>
+    <string name="filter_all">All</string>
+    <string name="filter_upcoming">Upcoming</string>
+    <string name="filter_past">Past</string>
+    <string name="delete_event">Delete Event</string>
+    <string name="delete_event_message">Delete \"%1$s\"?</string>
+    <string name="event_created">Event created</string>
+    <string name="event_updated">Event updated</string>
+    <string name="event_deleted">Event deleted</string>
+    <string name="total_events">Total Events</string>
+    <string name="upcoming_events">Upcoming</string>
+    <string name="past_events">Past</string>
+    <string name="no_chart_data">No chart data yet</string>
+    <string name="logout">Logout</string>
+    <string name="toggle_theme">Toggle Dark Mode</string>
+    <string name="event_reminder_default">You have an upcoming event reminder.</string>
+    <string name="reset_hint">Enter your email and we\'ll send a password reset link.</string>
+    <string name="login_subtitle">Plan beautifully. Never miss a moment.</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="create_account_title">Create your workspace</string>
+    <string name="create_account_subtitle">Organize every important event in one secure place.</string>
+    <string name="reset_password_title">Recover your account</string>
+    <string name="events_header">Your schedule</string>
+    <string name="events_subtitle">Search, filter, and manage every upcoming moment.</string>
+    <string name="event_details_subtitle">Add the essential information for your event.</string>
+    <string name="splash_tagline">Plan • Organize • Celebrate</string>
+    <string name="switch_to_light">Switch to light theme</string>
+    <string name="switch_to_dark">Switch to dark theme</string>
+    <string name="logout_confirmation">Are you sure you want to sign out of Event Manager?</string>
+    <string name="next_event">Next event</string>
+    <string name="no_upcoming_event">No upcoming events yet</string>
+    <string name="no_upcoming_event_hint">Create an event to start planning your next moment.</string>
+    <string name="monthly_activity">Monthly activity</string>
+    <string name="monthly_activity_hint">Events scheduled across recent months</string>
+    <string name="location_not_set">Location not set</string>
+
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="hero_today">Today is %1$s</string>
+    <string name="completion_label">Completed</string>
+    <string name="completion_value">%1$d%%</string>
+    <string name="stat_zero">0</string>
+
+    <plurals name="hero_planned">
+        <item quantity="one">%1$d planned</item>
+        <item quantity="other">%1$d planned</item>
+    </plurals>
+    <plurals name="hero_this_week">
+        <item quantity="one">%1$d this week</item>
+        <item quantity="other">%1$d this week</item>
+    </plurals>
+    <plurals name="completion_caption">
+        <item quantity="one">%1$d of %2$d event has already taken place</item>
+        <item quantity="other">%1$d of %2$d events have already taken place</item>
+    </plurals>
+    <plurals name="countdown_days">
+        <item quantity="one">In %1$d day</item>
+        <item quantity="other">In %1$d days</item>
+    </plurals>
+
+    <string name="section_overview">Overview</string>
+    <string name="section_insights">Insights</string>
+    <string name="insight_busiest_month">Busiest month</string>
+    <string name="insight_weekly_average">Monthly average</string>
+    <string name="insight_none">—</string>
+    <string name="week_ahead">Next 7 days</string>
+    <string name="week_ahead_hint">Daily load for the coming week</string>
+    <string name="countdown_today">Happening today</string>
+    <string name="countdown_tomorrow">Tomorrow</string>
+
+    <string name="empty_events_title">Nothing scheduled yet</string>
+    <string name="empty_events_body">Tap the button below to create your first event and start building your schedule.</string>
+    <string name="empty_search_title">No matches found</string>
+    <string name="empty_search_body">Try a different keyword or switch the filter above.</string>
+
+    <string name="cd_profile_avatar">Profile avatar</string>
+    <string name="cd_stat_icon">Statistic icon</string>
+    <string name="cd_brand_logo">Event Manager logo</string>
+    <string name="cd_empty_illustration">Empty state illustration</string>
+    <string name="cd_edit_event">Edit event</string>
+</resources>

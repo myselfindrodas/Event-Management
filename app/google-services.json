@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "495839771360",
+    "project_id": "techexcatly-2db4b",
+    "storage_bucket": "techexcatly-2db4b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495839771360:android:1e09890b7100e24dd66e85",
+        "android_client_info": {
+          "package_name": "com.example.eventmanagement"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAChoj9rRcMV0p_n_kfp5oaxnSgLr-_n6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

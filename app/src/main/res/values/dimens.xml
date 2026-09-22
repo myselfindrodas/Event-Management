@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="day_bar_min_height">6dp</dimen>
+    <dimen name="day_bar_max_height">68dp</dimen>
+</resources>
