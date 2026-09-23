@@ -7,9 +7,7 @@ import com.example.eventmanagement.core.error.Resource
 import com.example.eventmanagement.core.log.AppLogger
 import com.example.eventmanagement.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.eventmanagement.domain.usecase.auth.LogoutUseCase
-import com.example.eventmanagement.domain.usecase.notification.GetFcmTokenUseCase
-import com.example.eventmanagement.domain.usecase.notification.RegisterFcmTokenUseCase
-import com.example.eventmanagement.domain.usecase.notification.SubscribeToNotificationsUseCase
+import com.example.eventmanagement.domain.usecase.notification.EnsureNotificationRegistrationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,9 +16,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val subscribeToNotificationsUseCase: SubscribeToNotificationsUseCase,
-    private val registerFcmTokenUseCase: RegisterFcmTokenUseCase,
-    private val getFcmTokenUseCase: GetFcmTokenUseCase,
+    private val ensureNotificationRegistrationUseCase: EnsureNotificationRegistrationUseCase,
     private val logger: AppLogger
 ) : ViewModel() {
 
@@ -28,14 +24,14 @@ class MainViewModel @Inject constructor(
 
     fun onLoggedIn() {
         viewModelScope.launch {
-            subscribeToNotificationsUseCase()
-            registerFcmTokenUseCase()
-            if (BuildConfig.DEBUG) {
-                when (val result = getFcmTokenUseCase()) {
-                    is Resource.Success -> logger.d(TAG, "FCM token registered")
-                    is Resource.Error -> logger.e(TAG, "Failed to get FCM token")
-                    Resource.Loading -> Unit
+            when (val result = ensureNotificationRegistrationUseCase()) {
+                is Resource.Success -> {
+                    if (BuildConfig.DEBUG) logger.d(TAG, "FCM token registered")
                 }
+                is Resource.Error -> {
+                    if (BuildConfig.DEBUG) logger.e(TAG, "Failed to register FCM token")
+                }
+                Resource.Loading -> Unit
             }
         }
     }

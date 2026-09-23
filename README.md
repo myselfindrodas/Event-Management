@@ -112,6 +112,61 @@ UI → ViewModel → Use Cases → Repository Interfaces → Repository Implemen
 
 Presentation packages must never call `FirebaseAuth.getInstance()`, `FirebaseFirestore.getInstance()`, `FirebaseMessaging.getInstance()`, or `AuthRepository()` / `EventRepository()` constructors.
 
+### Session
+
+```
+FirebaseAuth
+    ↓
+FirebaseUserSession (data)
+    ↓
+UserSession (domain)
+    ↓
+FirebaseEventRepository / FirebaseNotificationRepository
+```
+
+Event and notification repositories resolve the current UID through `UserSession`, not by injecting `FirebaseAuth` directly.
+
+### Shared event stream
+
+```
+UserSession.userId
+        ↓
+flatMapLatest → Firestore snapshot listener
+        ↓
+shareIn(applicationScope, WhileSubscribed(5s), replay=1)
+      ↙                    ↘
+EventListViewModel     DashboardViewModel
+```
+
+### FCM registration
+
+```
+EventMessagingService.onNewToken(token)
+        ↓
+RegisterFcmTokenUseCase(token)
+        ↓
+NotificationRepository.registerToken(token)
+
+MainViewModel.onLoggedIn()
+        ↓
+EnsureNotificationRegistrationUseCase
+        ↓
+getToken → registerToken(token) → subscribeToTopic
+```
+
+`onNewToken` passes the provided token through; it does not call `getToken()` again.
+
+### Screen ViewModels
+
+| Screen | ViewModel |
+|--------|-----------|
+| Event list | `EventListViewModel` |
+| Event editor | `EventEditorViewModel` |
+| Dashboard | `DashboardViewModel` (+ `BuildDashboardDataUseCase`) |
+| Auth | `AuthViewModel` |
+| Splash | `SplashViewModel` |
+| Main | `MainViewModel` |
+
 ### `Resource<T>` and `AppError`
 
 ```kotlin
@@ -126,15 +181,7 @@ sealed class Resource<out T> {
 
 ### Shared event stream
 
-`FirebaseEventRepository` owns a single Firestore snapshot listener shared with:
-
-```text
-callbackFlow (snapshot)
-  → flatMapLatest(auth uid)
-  → shareIn(applicationScope, WhileSubscribed(5_000), replay = 1)
-```
-
-`EventViewModel` and `DashboardViewModel` both observe the same stream through `ObserveEventsUseCase`, so switching Events ↔ Dashboard does not open a second listener.
+See the diagram under §3. `FirebaseEventRepository` owns one shared listener via `UserSession.userId` → `flatMapLatest` → `shareIn`.
 
 ### Process entry
 
@@ -176,24 +223,23 @@ Android_Test_kotlin/
 │       │   │   │       ├── FirebaseEventRepository.kt
 │       │   │   │       └── FirebaseNotificationRepository.kt
 │       │   │   ├── domain/
-│       │   │   │   ├── model/          # Event (Instant), AuthUser, analytics types
-│       │   │   │   ├── repository/     # Auth / Event / Notification interfaces
-│       │   │   │   └── usecase/
-│       │   │   │       ├── auth/
-│       │   │   │       ├── event/
-│       │   │   │       ├── dashboard/
-│       │   │   │       └── notification/
-│       │   │   ├── di/
-│       │   │   │   ├── FirebaseModule.kt
-│       │   │   │   ├── RepositoryModule.kt
-│       │   │   │   ├── AppModule.kt / AppBindsModule.kt
-│       │   │   │   └── ApplicationScope.kt
+│       │   │   │   ├── model/
+│       │   │   │   ├── repository/
+│       │   │   │   ├── session/UserSession.kt
+│       │   │   │   └── usecase/{auth,event,dashboard,notification}/
+│       │   │   ├── data/
+│       │   │   │   ├── dto/ mapper/ firebase/
+│       │   │   │   ├── session/FirebaseUserSession.kt
+│       │   │   │   └── repository/Firebase*Repository.kt
 │       │   │   ├── presentation/
-│       │   │   │   ├── splash/         # SplashActivity, SplashViewModel
-│       │   │   │   ├── auth/           # Login / SignUp / Forgot + AuthViewModel
-│       │   │   │   ├── main/           # MainActivity, MainViewModel
-│       │   │   │   ├── events/         # List, Editor, Adapter, EventViewModel
-│       │   │   │   └── dashboard/      # DashboardFragment, DashboardViewModel
+│       │   │   │   ├── events/
+│       │   │   │   │   ├── EventListViewModel.kt
+│       │   │   │   │   ├── EventEditorViewModel.kt
+│       │   │   │   │   ├── EventListFragment.kt
+│       │   │   │   │   ├── EventEditorActivity.kt
+│       │   │   │   │   └── EventAdapter.kt
+│       │   │   │   ├── dashboard/ auth/ splash/ main/
+│       │   │   ├── di/
 │       │   │   └── service/EventMessagingService.kt
 │       │   └── res/
 │       │       ├── navigation/nav_graph.xml
@@ -258,7 +304,8 @@ File: `firestore/firestore.rules`
 
 - Owner-only read/write on `users/{userId}/events/{eventId}`
 - Create/update validate field types, non-empty title, and `userId == auth.uid`
-- Updates cannot change ownership (`userId` must stay the same)
+- Updates cannot change ownership (`userId`) or `createdAt`
+- Updates may only affect `title`, `description`, `dateTime`, `location`, `updatedAt`
 - Owner-only CRUD on `users/{userId}/devices/{deviceId}` for FCM tokens
 
 Deploy these before demoing CRUD or you will see `PERMISSION_DENIED`.
@@ -331,9 +378,11 @@ Uses the same shared event stream; time math goes through `AppClock` for testabi
 
 ```
 MainActivity → MainViewModel
-  → SubscribeToNotificationsUseCase   (topic: event_announcements)
-  → RegisterFcmTokenUseCase           (users/{uid}/devices/...)
-  → GetFcmTokenUseCase                (debug log only)
+  → EnsureNotificationRegistrationUseCase
+       → getToken → registerToken(token) → subscribe (event_announcements)
+
+EventMessagingService.onNewToken(token)
+  → RegisterFcmTokenUseCase(token)
 ```
 
 | Concern | Detail |
@@ -341,10 +390,10 @@ MainActivity → MainViewModel
 | Channel | `event_reminders` |
 | Global topic | `event_announcements` (non-personal announcements) |
 | Device docs | `users/{uid}/devices/{tokenId}` with `token`, `platform`, `updatedAt` |
-| Service | `EventMessagingService` (`@AndroidEntryPoint`); refreshes token registration on `onNewToken` |
+| Service | `EventMessagingService` (`@AndroidEntryPoint`); uses use case on token refresh |
 | Logging | Token details only when `BuildConfig.DEBUG` |
 
-Personal event reminders should target device tokens (or a per-user topic) via Cloud Functions — not the global announcements topic.
+Personal event reminders should target device tokens via Cloud Functions — not the global announcements topic.
 
 ---
 
@@ -606,10 +655,12 @@ Windows: `.\gradlew.bat` with the same tasks.
 
 | Area | Location |
 |------|----------|
-| Event ViewModel | `presentation/events/EventViewModelTest.kt` (Turbine + fake repo) |
+| Event list ViewModel | `presentation/events/EventListViewModelTest.kt` |
+| Event editor ViewModel | same file (`EventEditorViewModelTest`) |
 | Auth use cases | `domain/usecase/auth/AuthUseCasesTest.kt` |
 | Event use cases | `domain/usecase/event/EventUseCasesTest.kt` |
-| Dashboard analytics | `domain/usecase/dashboard/DashboardUseCasesTest.kt` |
+| Dashboard analytics | `DashboardUseCasesTest` + `BuildDashboardDataUseCaseTest` |
+| FCM registration | `domain/usecase/notification/NotificationUseCasesTest.kt` |
 | Error mapping | `data/firebase/FirebaseErrorMapperTest.kt` |
 | Fixed clock | `core/time/FakeAppClock.kt` |
 

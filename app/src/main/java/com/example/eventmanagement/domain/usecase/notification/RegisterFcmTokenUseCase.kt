@@ -7,5 +7,6 @@ import javax.inject.Inject
 class RegisterFcmTokenUseCase @Inject constructor(
     private val notificationRepository: NotificationRepository
 ) {
-    suspend operator fun invoke(): Resource<Unit> = notificationRepository.registerToken()
+    suspend operator fun invoke(token: String): Resource<Unit> =
+        notificationRepository.registerToken(token)
 }

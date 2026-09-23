@@ -24,6 +24,7 @@ service cloud.firestore {
         && data.location.size() <= 200
         && data.dateTime is timestamp
         && data.userId == request.auth.uid
+        && data.createdAt is timestamp
         && data.updatedAt is timestamp;
     }
 
@@ -41,7 +42,10 @@ service cloud.firestore {
       allow create: if isOwner(userId) && isValidEvent();
       allow update: if isOwner(userId)
         && isValidEvent()
-        && request.resource.data.userId == resource.data.userId;
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['title', 'description', 'dateTime', 'location', 'updatedAt']);
       allow delete: if isOwner(userId);
     }
 

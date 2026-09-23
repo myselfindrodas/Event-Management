@@ -4,6 +4,8 @@ import com.example.eventmanagement.core.log.AndroidAppLogger
 import com.example.eventmanagement.core.log.AppLogger
 import com.example.eventmanagement.core.time.AppClock
 import com.example.eventmanagement.core.time.SystemAppClock
+import com.example.eventmanagement.data.session.FirebaseUserSession
+import com.example.eventmanagement.domain.session.UserSession
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -25,6 +27,10 @@ abstract class AppBindsModule {
     @Binds
     @Singleton
     abstract fun bindAppLogger(implementation: AndroidAppLogger): AppLogger
+
+    @Binds
+    @Singleton
+    abstract fun bindUserSession(implementation: FirebaseUserSession): UserSession
 }
 
 @Module

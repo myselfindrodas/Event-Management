@@ -33,7 +33,7 @@ class EventEditorActivity : AppCompatActivity() {
     @Inject lateinit var themePreferences: ThemePreferences
 
     private lateinit var binding: ActivityEventEditorBinding
-    private val viewModel: EventViewModel by viewModels()
+    private val viewModel: EventEditorViewModel by viewModels()
     private var selectedDateTime: Calendar = Calendar.getInstance().apply {
         add(Calendar.HOUR_OF_DAY, 1)
         set(Calendar.MINUTE, 0)
@@ -72,7 +72,7 @@ class EventEditorActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.editorState.collect { renderEditor(it) } }
+                launch { viewModel.uiState.collect { renderEditor(it) } }
                 launch { viewModel.effects.collect { handleEffect(it) } }
             }
         }
@@ -93,23 +93,22 @@ class EventEditorActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleEffect(effect: EventUiEffect) {
+    private fun handleEffect(effect: EventEditorUiEffect) {
         when (effect) {
-            EventUiEffect.Created -> {
+            EventEditorUiEffect.Created -> {
                 Toast.makeText(this, R.string.event_created, Toast.LENGTH_SHORT).show()
                 finish()
             }
-            EventUiEffect.Updated -> {
+            EventEditorUiEffect.Updated -> {
                 Toast.makeText(this, R.string.event_updated, Toast.LENGTH_SHORT).show()
                 finish()
             }
-            is EventUiEffect.Error -> {
+            is EventEditorUiEffect.Error -> {
                 Snackbar.make(binding.root, effect.error.toUserMessage(this), Snackbar.LENGTH_LONG).show()
-                if (isEdit && viewModel.editorState.value.event == null && !viewModel.editorState.value.isLoading) {
+                if (isEdit && viewModel.uiState.value.event == null && !viewModel.uiState.value.isLoading) {
                     finish()
                 }
             }
-            EventUiEffect.Deleted -> Unit
         }
     }
 

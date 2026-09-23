@@ -5,12 +5,12 @@ import com.example.eventmanagement.core.error.Resource
 import com.example.eventmanagement.core.time.AppClock
 import com.example.eventmanagement.data.firebase.mapFirebaseException
 import com.example.eventmanagement.domain.repository.NotificationRepository
+import com.example.eventmanagement.domain.session.UserSession
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,7 +18,7 @@ import javax.inject.Singleton
 class FirebaseNotificationRepository @Inject constructor(
     private val messaging: FirebaseMessaging,
     private val firestore: FirebaseFirestore,
-    private val auth: FirebaseAuth,
+    private val userSession: UserSession,
     private val clock: AppClock
 ) : NotificationRepository {
 
@@ -56,12 +56,12 @@ class FirebaseNotificationRepository @Inject constructor(
         }
     }
 
-    override suspend fun registerToken(): Resource<Unit> {
+    override suspend fun registerToken(token: String): Resource<Unit> {
         return try {
-            val userId = auth.currentUser?.uid ?: return Resource.Error(AppError.Unauthorized)
-            val token = messaging.token.await()
-            if (token.isNullOrBlank()) return Resource.Error(AppError.Unknown())
-            val now = Timestamp(clock.now().epochSecond, clock.now().nano)
+            val userId = userSession.currentUserId() ?: return Resource.Error(AppError.Unauthorized)
+            if (token.isBlank()) return Resource.Error(AppError.Unknown())
+            val nowInstant = clock.now()
+            val now = Timestamp(nowInstant.epochSecond, nowInstant.nano)
             firestore.collection("users")
                 .document(userId)
                 .collection("devices")
@@ -84,7 +84,7 @@ class FirebaseNotificationRepository @Inject constructor(
 
     override suspend fun unregisterCurrentToken(): Resource<Unit> {
         return try {
-            val userId = auth.currentUser?.uid ?: return Resource.Success(Unit)
+            val userId = userSession.currentUserId() ?: return Resource.Success(Unit)
             val token = runCatching { messaging.token.await() }.getOrNull()
             if (!token.isNullOrBlank()) {
                 firestore.collection("users")

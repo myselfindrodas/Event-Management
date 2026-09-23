@@ -10,10 +10,7 @@ import com.example.eventmanagement.domain.model.DayLoad
 import com.example.eventmanagement.domain.model.Event
 import com.example.eventmanagement.domain.model.EventStats
 import com.example.eventmanagement.domain.usecase.auth.GetCurrentUserUseCase
-import com.example.eventmanagement.domain.usecase.dashboard.GetEventStatsUseCase
-import com.example.eventmanagement.domain.usecase.dashboard.GetMonthlyEventCountsUseCase
-import com.example.eventmanagement.domain.usecase.dashboard.GetNextSevenDaysUseCase
-import com.example.eventmanagement.domain.usecase.dashboard.GetNextUpcomingEventUseCase
+import com.example.eventmanagement.domain.usecase.dashboard.BuildDashboardDataUseCase
 import com.example.eventmanagement.domain.usecase.event.ObserveEventsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,10 +43,7 @@ data class DashboardUiState(
 class DashboardViewModel @Inject constructor(
     private val observeEventsUseCase: ObserveEventsUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val getEventStatsUseCase: GetEventStatsUseCase,
-    private val getNextUpcomingEventUseCase: GetNextUpcomingEventUseCase,
-    private val getMonthlyEventCountsUseCase: GetMonthlyEventCountsUseCase,
-    private val getNextSevenDaysUseCase: GetNextSevenDaysUseCase,
+    private val buildDashboardDataUseCase: BuildDashboardDataUseCase,
     private val clock: AppClock
 ) : ViewModel() {
 
@@ -81,18 +75,18 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun bindEvents(events: List<Event>) {
-        val next = getNextUpcomingEventUseCase(events)
+        val data = buildDashboardDataUseCase(events)
         _uiState.update {
             it.copy(
                 isLoading = false,
                 error = null,
-                stats = getEventStatsUseCase(events),
-                nextEvent = next,
-                nextEventDays = next?.let { event -> DateFormatter.daysUntil(event.dateTime, clock.now()) } ?: 0,
-                weekLoad = getNextSevenDaysUseCase(events),
-                busiestMonth = getMonthlyEventCountsUseCase.busiestMonth(events),
-                monthlyAverage = getMonthlyEventCountsUseCase.monthlyAverage(events),
-                monthlyCounts = getMonthlyEventCountsUseCase(events)
+                stats = data.stats,
+                nextEvent = data.nextEvent,
+                nextEventDays = data.nextEventDays,
+                weekLoad = data.weekLoad,
+                busiestMonth = data.busiestMonth,
+                monthlyAverage = data.monthlyAverage,
+                monthlyCounts = data.monthlyCounts
             )
         }
     }

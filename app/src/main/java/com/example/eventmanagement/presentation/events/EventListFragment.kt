@@ -33,7 +33,7 @@ class EventListFragment : Fragment() {
 
     private var _binding: FragmentEventListBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: EventViewModel by viewModels()
+    private val viewModel: EventListViewModel by viewModels()
     private lateinit var adapter: EventAdapter
 
     private var isFirstLoad = true
@@ -135,15 +135,14 @@ class EventListFragment : Fragment() {
         renderEmptyState(state.events.isEmpty())
     }
 
-    private fun handleEffect(effect: EventUiEffect) {
+    private fun handleEffect(effect: EventListUiEffect) {
         when (effect) {
-            is EventUiEffect.Error ->
+            is EventListUiEffect.Error ->
                 Snackbar.make(binding.root, effect.error.toUserMessage(requireContext()), Snackbar.LENGTH_LONG).show()
-            EventUiEffect.Deleted ->
+            EventListUiEffect.Deleted ->
                 Snackbar.make(binding.root, R.string.event_deleted, Snackbar.LENGTH_SHORT)
                     .setAnchorView(binding.fabAdd)
                     .show()
-            EventUiEffect.Created, EventUiEffect.Updated -> Unit
         }
     }
 

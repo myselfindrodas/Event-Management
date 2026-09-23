@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import com.example.eventmanagement.EventManagementApp
 import com.example.eventmanagement.R
 import com.example.eventmanagement.core.log.AppLogger
-import com.example.eventmanagement.domain.repository.NotificationRepository
+import com.example.eventmanagement.domain.usecase.notification.RegisterFcmTokenUseCase
 import com.example.eventmanagement.presentation.main.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class EventMessagingService : FirebaseMessagingService() {
 
-    @Inject lateinit var notificationRepository: NotificationRepository
+    @Inject lateinit var registerFcmTokenUseCase: RegisterFcmTokenUseCase
     @Inject lateinit var logger: AppLogger
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -44,7 +44,7 @@ class EventMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         logger.d(TAG, "FCM token refreshed")
         serviceScope.launch {
-            notificationRepository.registerToken()
+            registerFcmTokenUseCase(token)
         }
     }
 

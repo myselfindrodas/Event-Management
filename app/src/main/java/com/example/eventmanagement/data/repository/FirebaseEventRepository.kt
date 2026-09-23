@@ -10,13 +10,14 @@ import com.example.eventmanagement.data.mapper.toWriteMap
 import com.example.eventmanagement.di.ApplicationScope
 import com.example.eventmanagement.domain.model.Event
 import com.example.eventmanagement.domain.repository.EventRepository
+import com.example.eventmanagement.domain.session.UserSession
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,12 +32,12 @@ import javax.inject.Singleton
 @Singleton
 class FirebaseEventRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val auth: FirebaseAuth,
+    private val userSession: UserSession,
     private val clock: AppClock,
     @ApplicationScope applicationScope: CoroutineScope
 ) : EventRepository {
 
-    private val sharedEvents: Flow<Resource<List<Event>>> = authState()
+    private val sharedEvents: Flow<Resource<List<Event>>> = userSession.userId
         .flatMapLatest { uid ->
             if (uid == null) flowOf(Resource.Error(AppError.Unauthorized))
             else snapshotFlow(uid)
@@ -137,19 +137,11 @@ class FirebaseEventRepository @Inject constructor(
         awaitClose { registration.remove() }
     }
 
-    private fun authState(): Flow<String?> = callbackFlow {
-        val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            trySend(firebaseAuth.currentUser?.uid)
-        }
-        auth.addAuthStateListener(listener)
-        awaitClose { auth.removeAuthStateListener(listener) }
-    }
-
     private fun eventsCollection(userId: String) =
         firestore.collection("users").document(userId).collection("events")
 
     private fun requireUserId(): String =
-        auth.currentUser?.uid ?: throw UnauthorizedException()
+        userSession.currentUserId() ?: throw UnauthorizedException()
 
     private class UnauthorizedException : Exception()
 }
