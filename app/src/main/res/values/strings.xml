@@ -103,4 +103,28 @@
     <string name="cd_brand_logo">Event Manager logo</string>
     <string name="cd_empty_illustration">Empty state illustration</string>
     <string name="cd_edit_event">Edit event</string>
+
+    <string name="account_created">Account created successfully</string>
+    <string name="reset_email_sent">Password reset email sent. Check your inbox.</string>
+    <string name="notification_channel_name">Event Reminders</string>
+    <string name="notification_channel_description">Notifications for upcoming events</string>
+
+    <string name="error_network">Network error. Check your connection.</string>
+    <string name="error_unauthorized">Please sign in to continue.</string>
+    <string name="error_permission_denied">Permission denied. Check Firestore rules.</string>
+    <string name="error_not_found">Event not found.</string>
+    <string name="error_too_many_requests">Too many attempts. Please try again later.</string>
+    <string name="error_invalid_event_id">Invalid event id.</string>
+    <string name="error_invalid_credentials">Invalid email or password.</string>
+    <string name="error_account_not_found">No account found with this email.</string>
+    <string name="error_email_in_use">An account already exists with this email.</string>
+    <string name="error_weak_password">Password should be at least 6 characters.</string>
+    <string name="error_user_disabled">This account has been disabled.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="error_email_required">Email is required.</string>
+    <string name="error_email_invalid">Enter a valid email address.</string>
+    <string name="error_password_required">Password is required.</string>
+    <string name="error_password_too_short">Password must be at least 6 characters.</string>
+    <string name="error_passwords_mismatch">Passwords do not match.</string>
+    <string name="error_title_required">Title is required.</string>
 </resources>

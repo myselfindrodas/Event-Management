@@ -5,17 +5,30 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.example.eventmanagement.EventManagementApp
 import com.example.eventmanagement.R
-import com.example.eventmanagement.ui.main.MainActivity
+import com.example.eventmanagement.core.log.AppLogger
+import com.example.eventmanagement.domain.repository.NotificationRepository
+import com.example.eventmanagement.presentation.main.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class EventMessagingService : FirebaseMessagingService() {
+
+    @Inject lateinit var notificationRepository: NotificationRepository
+    @Inject lateinit var logger: AppLogger
+
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onMessageReceived(message: RemoteMessage) {
         val title = message.notification?.title
@@ -29,7 +42,10 @@ class EventMessagingService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        Log.d(TAG, "FCM token: $token")
+        logger.d(TAG, "FCM token refreshed")
+        serviceScope.launch {
+            notificationRepository.registerToken()
+        }
     }
 
     private fun showNotification(title: String, body: String) {

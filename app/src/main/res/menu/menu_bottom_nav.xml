@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/nav_events"
+        android:id="@+id/eventListFragment"
         android:icon="@drawable/ic_events"
         android:title="@string/events" />
     <item
-        android:id="@+id/nav_dashboard"
+        android:id="@+id/dashboardFragment"
         android:icon="@drawable/ic_dashboard"
         android:title="@string/dashboard" />
 </menu>

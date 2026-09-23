@@ -15,7 +15,7 @@
         android:theme="@style/Theme.EventManagement">
 
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name=".presentation.splash.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.EventManagement.Splash">
             <intent-filter>
@@ -25,26 +25,26 @@
         </activity>
 
         <activity
-            android:name=".ui.auth.LoginActivity"
+            android:name=".presentation.auth.LoginActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".ui.auth.SignUpActivity"
+            android:name=".presentation.auth.SignUpActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".ui.auth.ForgotPasswordActivity"
+            android:name=".presentation.auth.ForgotPasswordActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".presentation.main.MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.events.EventEditorActivity"
+            android:name=".presentation.events.EventEditorActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
